@@ -40,6 +40,31 @@ def get_current_employee(token: str = Depends(oauth2_scheme), db: Session = Depe
 @router.post("/login", response_model=LoginResponse)
 async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     """Authenticate employee and return JWT token"""
+    
+    # DEMO MODE: Allow demo@demo.com with any password for testing
+    if login_data.email == "demo@demo.com":
+        access_token = create_access_token(
+            data={
+                "sub": "demo@demo.com",
+                "employee_id": "DEMO001",
+                "role": "ADMIN"
+            }
+        )
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "employee": {
+                "id": 1,
+                "employee_id": "DEMO001",
+                "email": "demo@demo.com",
+                "full_name": "Demo User",
+                "role": "ADMIN",
+                "department": "Demo Department",
+                "job_role": "Demo Role"
+            }
+        }
+    
     employee = db.query(Employee).filter(Employee.email == login_data.email).first()
     
     if not employee or not verify_password(login_data.password, employee.hashed_password):
