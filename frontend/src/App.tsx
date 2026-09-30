@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import EmployeesPage from './pages/EmployeesPage';
 import EmployeeProfilePage from './pages/EmployeeProfilePage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import AIAssistantPage from './pages/AIAssistantPage';
 import Layout from './components/Layout';
 import { getCurrentUser } from './services/api';
 
@@ -81,6 +82,7 @@ function App() {
           <Route path="employees" element={<EmployeesPage />} />
           <Route path="employees/:id" element={<EmployeeProfilePage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="ai-assistant" element={<AIAssistantPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
