@@ -18,7 +18,11 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://growth-intel-sable.vercel.app"
+    ]
     
     # ML Models
     MODEL_PATH: str = "../ml/models"
