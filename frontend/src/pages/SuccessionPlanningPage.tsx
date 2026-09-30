@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, TrendingUp, AlertTriangle, Award, Target, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Users, AlertTriangle, Award, Target, CheckCircle } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -179,32 +179,28 @@ export default function SuccessionPlanningPage() {
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <MetricCard
-          title="Total Successors"
+          label="Total Successors"
           value={metrics.total_successors}
           icon={Users}
-          trend={12}
-          color="blue"
+          color="bg-blue-500"
         />
         <MetricCard
-          title="Ready Now"
+          label="Ready Now"
           value={metrics.ready_now}
           icon={CheckCircle}
-          trend={8}
-          color="green"
+          color="bg-green-500"
         />
         <MetricCard
-          title="Critical Gaps"
+          label="Critical Gaps"
           value={metrics.critical_gaps}
           icon={AlertTriangle}
-          trend={-25}
-          color="red"
+          color="bg-red-500"
         />
         <MetricCard
-          title="Avg Readiness"
+          label="Avg Readiness"
           value={`${metrics.avg_readiness}%`}
           icon={Award}
-          trend={5}
-          color="purple"
+          color="bg-purple-500"
         />
       </div>
 

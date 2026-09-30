@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookOpen, TrendingUp, Target, DollarSign, Award, Users, CheckCircle, Clock } from 'lucide-react';
+import { Target, DollarSign, Award, Users, CheckCircle } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -196,32 +196,28 @@ export default function TrainingDevelopmentPage() {
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <MetricCard
-          title="Total Participants"
+          label="Total Participants"
           value={totalParticipants}
           icon={Users}
-          trend={15}
-          color="blue"
+          color="bg-blue-500"
         />
         <MetricCard
-          title="Completed"
+          label="Completed"
           value={totalCompleted}
           icon={CheckCircle}
-          trend={12}
-          color="green"
+          color="bg-green-500"
         />
         <MetricCard
-          title="Avg Completion"
+          label="Avg Completion"
           value={`${avgCompletionRate}%`}
           icon={Target}
-          trend={8}
-          color="purple"
+          color="bg-purple-500"
         />
         <MetricCard
-          title="Total Investment"
+          label="Total Investment"
           value={`$${(totalInvestment / 1000).toFixed(0)}K`}
           icon={DollarSign}
-          trend={-5}
-          color="orange"
+          color="bg-orange-500"
         />
       </div>
 

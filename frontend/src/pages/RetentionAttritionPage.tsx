@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TrendingDown, AlertTriangle, Users, DollarSign, UserMinus, UserCheck, Calendar, TrendingUp } from 'lucide-react';
+import { TrendingDown, AlertTriangle, DollarSign, UserMinus, UserCheck } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -178,7 +178,6 @@ export default function RetentionAttritionPage() {
     : flightRiskEmployees.filter(e => e.risk_level === selectedRiskLevel);
 
   const totalAttrition = attritionTrends.reduce((acc, t) => acc + t.total, 0);
-  const voluntaryAttrition = attritionTrends.reduce((acc, t) => acc + t.voluntary, 0);
   const avgAttritionRate = 11.2;
   const estimatedCost = totalAttrition * 75000; // Average cost per departure
 
@@ -195,32 +194,28 @@ export default function RetentionAttritionPage() {
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <MetricCard
-          title="Avg Attrition Rate"
+          label="Avg Attrition Rate"
           value={`${avgAttritionRate}%`}
           icon={TrendingDown}
-          trend={-15}
-          color="green"
+          color="bg-green-500"
         />
         <MetricCard
-          title="Total Exits (6mo)"
+          label="Total Exits (6mo)"
           value={totalAttrition}
           icon={UserMinus}
-          trend={-8}
-          color="blue"
+          color="bg-blue-500"
         />
         <MetricCard
-          title="High Flight Risk"
+          label="High Flight Risk"
           value={flightRiskEmployees.filter(e => e.risk_level === 'HIGH' || e.risk_level === 'CRITICAL').length}
           icon={AlertTriangle}
-          trend={12}
-          color="red"
+          color="bg-red-500"
         />
         <MetricCard
-          title="Attrition Cost"
+          label="Attrition Cost"
           value={`$${(estimatedCost / 1000000).toFixed(1)}M`}
           icon={DollarSign}
-          trend={-10}
-          color="purple"
+          color="bg-purple-500"
         />
       </div>
 
