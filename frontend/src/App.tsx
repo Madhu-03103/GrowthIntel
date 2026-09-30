@@ -6,6 +6,9 @@ import EmployeesPage from './pages/EmployeesPage';
 import EmployeeProfilePage from './pages/EmployeeProfilePage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import AIAssistantPage from './pages/AIAssistantPage';
+import SuccessionPlanningPage from './pages/SuccessionPlanningPage';
+import TrainingDevelopmentPage from './pages/TrainingDevelopmentPage';
+import RetentionAttritionPage from './pages/RetentionAttritionPage';
 import Layout from './components/Layout';
 import { getCurrentUser } from './services/api';
 
@@ -83,6 +86,9 @@ function App() {
           <Route path="employees/:id" element={<EmployeeProfilePage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="ai-assistant" element={<AIAssistantPage />} />
+          <Route path="succession-planning" element={<SuccessionPlanningPage />} />
+          <Route path="training-development" element={<TrainingDevelopmentPage />} />
+          <Route path="retention-attrition" element={<RetentionAttritionPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>

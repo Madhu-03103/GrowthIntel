@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, BarChart3, LogOut, TrendingUp, Bell, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Users, BarChart3, LogOut, TrendingUp, Bell, Sparkles, GitBranch, BookOpen, UserMinus } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import NotificationCenter from './NotificationCenter';
@@ -19,6 +19,9 @@ export default function Layout({ currentUser, onLogout }: LayoutProps) {
     { name: 'Employees', path: '/employees', icon: Users },
     { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: 'AI Assistant', path: '/ai-assistant', icon: Sparkles },
+    { name: 'Succession Planning', path: '/succession-planning', icon: GitBranch },
+    { name: 'Training & Development', path: '/training-development', icon: BookOpen },
+    { name: 'Retention & Attrition', path: '/retention-attrition', icon: UserMinus },
   ];
 
   // Fetch unread count periodically
