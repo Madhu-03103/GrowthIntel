@@ -24,28 +24,6 @@ async def get_employees(
 ):
     """Get list of employees with filters"""
     
-    # Check if database has data, if not return mock data
-    employee_count = db.query(Employee).count()
-    if employee_count == 0:
-        # Return mock data
-        filtered = MOCK_EMPLOYEES
-        
-        if department:
-            filtered = [e for e in filtered if e["department"] == department]
-        if role:
-            filtered = [e for e in filtered if e["role"] == role]
-        if growth_level:
-            filtered = [e for e in filtered if e["growth_level"] == growth_level]
-        if risk_level:
-            filtered = [e for e in filtered if e["risk_level"] == risk_level]
-        if search:
-            search_lower = search.lower()
-            filtered = [e for e in filtered if search_lower in e["first_name"].lower() or 
-                       search_lower in e["last_name"].lower() or 
-                       search_lower in e["employee_id"].lower()]
-        
-        return filtered[skip:skip+limit]
-    
     # Build query with eager loading using selectinload (doesn't create joins)
     query = db.query(Employee).options(
         selectinload(Employee.department),
