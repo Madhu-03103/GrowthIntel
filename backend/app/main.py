@@ -93,7 +93,7 @@ async def manual_seed():
         if employee_count > 0:
             return {
                 "status": "skipped",
-                "message": f"Database already has {employee_count} employees. Delete them first if you want to re-seed."
+                "message": f"Database already has {employee_count} employees. Use /reset-db to clear and reseed."
             }
         
         # Run seed script
@@ -121,6 +121,43 @@ async def manual_seed():
         }
     finally:
         db.close()
+
+
+@app.get("/reset-db")
+async def reset_database():
+    """Clear and reseed the database"""
+    from .core.database import SessionLocal, engine, Base
+    
+    try:
+        print("🗑️  Dropping all tables...")
+        Base.metadata.drop_all(bind=engine)
+        
+        print("📊 Creating fresh tables...")
+        Base.metadata.create_all(bind=engine)
+        
+        print("📦 Seeding fresh data...")
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+        from scripts.seed_data import main as seed_main
+        seed_main()
+        
+        print("✅ Database reset and seeded successfully!")
+        
+        return {
+            "status": "success",
+            "message": "Database reset and seeded successfully!",
+            "employees_created": 500,
+            "admin_email": "admin@company.com",
+            "admin_password": "admin123"
+        }
+    except Exception as e:
+        print(f"❌ Reset failed: {e}")
+        import traceback
+        return {
+            "status": "error",
+            "message": f"Reset failed: {str(e)}",
+            "traceback": traceback.format_exc()
+        }
 
 
 @app.get("/debug/users")
