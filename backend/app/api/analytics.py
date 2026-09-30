@@ -4,6 +4,7 @@ from sqlalchemy import func, desc
 from ..core.database import get_db
 from ..models import Employee, Department, JobRole, GrowthLevelEnum, RiskLevelEnum
 from .auth import get_current_employee
+from .mock_data import get_mock_analytics
 
 router = APIRouter()
 
@@ -15,8 +16,13 @@ async def get_analytics_overview(
 ):
     """Get executive dashboard overview metrics"""
     
+    # Check if database has data, if not return mock data
+    employee_count = db.query(func.count(Employee.id)).filter(Employee.is_active == 1).scalar()
+    if employee_count == 0:
+        return get_mock_analytics()
+    
     # Total employees
-    total_employees = db.query(func.count(Employee.id)).filter(Employee.is_active == 1).scalar()
+    total_employees = employee_count
     
     # Average scores
     avg_growth = db.query(func.avg(Employee.growth_score)).filter(Employee.is_active == 1).scalar() or 0
