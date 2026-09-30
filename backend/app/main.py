@@ -27,6 +27,27 @@ app.add_middleware(
 async def startup_event():
     """Initialize database on startup"""
     init_db()
+    
+    # Auto-seed database if empty (for production deployment)
+    from .core.database import SessionLocal
+    from .models.employee import Employee
+    db = SessionLocal()
+    try:
+        # Check if database has any employees
+        employee_count = db.query(Employee).count()
+        if employee_count == 0:
+            print("📦 Database is empty. Running seed script...")
+            # Run seed script
+            import sys
+            sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+            from scripts.seed_data import main as seed_main
+            seed_main()
+            print("✅ Database seeded successfully!")
+    except Exception as e:
+        print(f"⚠️  Seed check failed: {e}")
+    finally:
+        db.close()
+    
     print(f"🚀 {settings.PROJECT_NAME} v{settings.VERSION} started")
     print(f"📊 Database: {settings.DATABASE_URL.split('@')[-1] if '@' in settings.DATABASE_URL else 'configured'}")
     print(f"🔧 Environment: {settings.ENVIRONMENT}")
