@@ -27,6 +27,19 @@ def get_current_employee(token: str = Depends(oauth2_scheme), db: Session = Depe
     if email is None:
         raise credentials_exception
     
+    # DEMO MODE: Allow demo user to bypass database check
+    if email == "demo@demo.com":
+        # Create a mock employee object for demo user
+        class MockEmployee:
+            id = 1
+            email = "demo@demo.com"
+            first_name = "Demo"
+            last_name = "User"
+            full_name = "Demo User"
+            is_active = True
+            user_role = type('obj', (object,), {'value': 'ADMIN'})
+        return MockEmployee()
+    
     employee = db.query(Employee).filter(Employee.email == email).first()
     if employee is None:
         raise credentials_exception
