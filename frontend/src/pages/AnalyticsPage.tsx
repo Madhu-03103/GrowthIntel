@@ -5,6 +5,7 @@ import {
   ScatterChart, Scatter, ZAxis
 } from 'recharts';
 import { Filter, Download, Calendar, TrendingUp, X } from 'lucide-react';
+import { getDepartmentAnalytics } from '../services/api';
 
 const COLORS = {
   primary: '#3b82f6',
@@ -36,15 +37,9 @@ export default function AnalyticsPage() {
   const loadAnalytics = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/analytics/departments', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setDepartmentData(data);
-        setDepartments(data.map((d: any) => d.department_name));
-      }
+      const data = await getDepartmentAnalytics();
+      setDepartmentData(data);
+      setDepartments(data.map((d: any) => d.department_name));
     } catch (error) {
       console.error('Failed to load analytics:', error);
     } finally {
