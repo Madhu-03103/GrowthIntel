@@ -1,0 +1,24 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  getEmployeeOverview,
+  getGrowthPrediction,
+  simulateGrowth,
+} from '../services/api';
+import {
+  TrendingUp,
+  Award,
+  AlertCircle,
+  Target,
+  Briefcase,
+  Calendar,
+  Mail,
+  Badge as BadgeIcon,
+  BookOpen,
+  CheckCircle,
+  FileText,
+} from 'lucide-react';
+import clsx from 'clsx';
+
+type TabType = 'overview' | 'goals' | 'training' | 'reviews';
+

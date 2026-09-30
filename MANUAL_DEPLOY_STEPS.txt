@@ -1,0 +1,75 @@
+===============================================
+DEPLOY YOUR APP TO VERCEL - COPY & PASTE
+===============================================
+
+STEP 1: LOGIN TO VERCEL
+------------------------
+vercel login
+
+(Browser will open - login with GitHub/GitLab/Bitbucket or create free account)
+
+
+STEP 2: DEPLOY FRONTEND
+------------------------
+cd frontend
+vercel --prod
+
+Answer prompts:
+- Set up and deploy? → Y
+- Which scope? → Choose your account
+- Link to existing project? → N
+- Project name? → employee-growth-intelligence
+- Directory? → Press Enter
+- Override settings? → N
+
+Wait ~30 seconds...
+
+
+STEP 3: COPY YOUR DEPLOYMENT LINK
+----------------------------------
+You'll see something like:
+✅ Production: https://employee-growth-intelligence-xxxx.vercel.app
+
+THAT'S YOUR LINK! Copy it and test in browser.
+
+
+STEP 4: START BACKEND LOCALLY
+------------------------------
+cd ../backend
+uvicorn app.main:app --reload
+
+(Backend will run on http://localhost:8000)
+
+
+STEP 5: UPDATE CORS (if needed)
+--------------------------------
+Open: backend/app/main.py
+
+Find this section and add your Vercel URL:
+
+allow_origins=[
+    "http://localhost:3000",
+    "https://your-vercel-url.vercel.app"  # ADD THIS LINE
+],
+
+
+STEP 6: TEST YOUR LIVE APP
+---------------------------
+Open: https://your-vercel-url.vercel.app
+
+Login with:
+Email: admin@company.com
+Password: admin123
+
+
+===============================================
+DONE! YOUR APP IS LIVE! 🎉
+===============================================
+
+Share your link:
+- Team members
+- LinkedIn
+- Portfolio
+- Resume
+
+Questions? See DEPLOY_NOW.md for detailed help.

@@ -1,0 +1,63 @@
+================================================================
+  GET YOUR VERCEL DEPLOYMENT LINK - COPY & PASTE COMMANDS
+================================================================
+
+STEP 1: LOGIN TO VERCEL
+------------------------
+vercel login
+
+(Browser will open - create free account or login)
+
+
+STEP 2: GO TO FRONTEND FOLDER
+------------------------------
+cd frontend
+
+
+STEP 3: DEPLOY TO PRODUCTION
+-----------------------------
+vercel --prod
+
+(Answer prompts - takes 30 seconds)
+
+
+STEP 4: COPY YOUR LINK
+-----------------------
+You'll see:
+✅ Production: https://your-app-abc123.vercel.app
+
+THAT'S YOUR DEPLOYMENT LINK! 🎉
+
+
+STEP 5: START BACKEND (NEW TERMINAL)
+-------------------------------------
+cd backend
+uvicorn app.main:app --reload
+
+
+STEP 6: UPDATE CORS
+--------------------
+Open: backend/app/core/config.py
+
+Change this line:
+ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+
+To this (add your Vercel URL):
+ALLOWED_ORIGINS: List[str] = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://your-app-abc123.vercel.app"
+]
+
+Save and restart backend (Ctrl+C, then run again)
+
+
+DONE! 🎊
+--------
+Open your Vercel link in browser
+Login: admin@company.com / admin123
+
+
+================================================================
+NEED HELP? See GET_VERCEL_LINK.md for detailed instructions
+================================================================

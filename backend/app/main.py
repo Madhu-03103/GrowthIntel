@@ -1,0 +1,97 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from .core.config import settings
+from .core.database import init_db
+import os
+
+# Create FastAPI application
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION,
+    description="AI-powered HR analytics platform for employee growth intelligence"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database on startup"""
+    init_db()
+    print(f"🚀 {settings.PROJECT_NAME} v{settings.VERSION} started")
+    print(f"📊 Database: {settings.DATABASE_URL.split('@')[-1] if '@' in settings.DATABASE_URL else 'configured'}")
+    print(f"🔧 Environment: {settings.ENVIRONMENT}")
+
+
+@app.get("/")
+async def root():
+    """Serve the frontend application"""
+    static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+    index_file = os.path.join(static_dir, "index.html")
+    
+    # If static files exist, serve the React app
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    
+    # Otherwise, return API info (for development)
+    return {
+        "name": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "status": "running",
+        "docs": "/docs",
+        "tagline": "Predict. Understand. Develop. Grow."
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy"}
+
+
+# Import and include routers
+from .api import employees, auth, predictions, analytics, notifications, goals, training, reviews
+
+app.include_router(auth.router, prefix=f"{settings.API_PREFIX}/auth", tags=["Authentication"])
+app.include_router(employees.router, prefix=f"{settings.API_PREFIX}/employees", tags=["Employees"])
+app.include_router(predictions.router, prefix=f"{settings.API_PREFIX}/predictions", tags=["Predictions"])
+app.include_router(analytics.router, prefix=f"{settings.API_PREFIX}/analytics", tags=["Analytics"])
+app.include_router(notifications.router, prefix=f"{settings.API_PREFIX}/notifications", tags=["Notifications"])
+app.include_router(goals.router, prefix=f"{settings.API_PREFIX}/goals", tags=["Goals"])
+app.include_router(training.router, prefix=f"{settings.API_PREFIX}/training", tags=["Training"])
+app.include_router(reviews.router, prefix=f"{settings.API_PREFIX}/reviews", tags=["Reviews"])
+
+# Serve static files (frontend) - must be AFTER API routes
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if os.path.exists(static_dir):
+    # Mount assets folder
+    assets_dir = os.path.join(static_dir, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+    
+    # Catch-all route for SPA - must be last
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        """Serve frontend for all non-API routes (SPA support)"""
+        file_path = os.path.join(static_dir, full_path)
+        
+        # If file exists, serve it
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return FileResponse(file_path)
+        
+        # Otherwise, serve index.html (for client-side routing)
+        return FileResponse(os.path.join(static_dir, "index.html"))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
