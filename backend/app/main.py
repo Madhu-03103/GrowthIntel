@@ -113,9 +113,33 @@ async def manual_seed():
         }
     except Exception as e:
         print(f"❌ Seed failed: {e}")
+        import traceback
         return {
             "status": "error",
-            "message": f"Seeding failed: {str(e)}"
+            "message": f"Seeding failed: {str(e)}",
+            "traceback": traceback.format_exc()
+        }
+    finally:
+        db.close()
+
+
+@app.get("/debug/users")
+async def debug_users():
+    """Debug endpoint to check if users exist"""
+    from .core.database import SessionLocal
+    from .models.employee import Employee
+    
+    db = SessionLocal()
+    try:
+        employee_count = db.query(Employee).count()
+        admin = db.query(Employee).filter(Employee.email == "admin@company.com").first()
+        
+        return {
+            "total_employees": employee_count,
+            "admin_exists": admin is not None,
+            "admin_email": admin.email if admin else None,
+            "admin_id": admin.id if admin else None,
+            "database_url": settings.DATABASE_URL
         }
     finally:
         db.close()
