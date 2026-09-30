@@ -27,75 +27,42 @@ def get_current_employee(token: str = Depends(oauth2_scheme), db: Session = Depe
     if email is None:
         raise credentials_exception
     
-    # DEMO MODE: Allow demo user to bypass database check
-    if email == "demo@demo.com":
-        # Create a mock employee object for demo user
-        class MockEmployee:
-            id = 1
-            email = "demo@demo.com"
-            first_name = "Demo"
-            last_name = "User"
-            full_name = "Demo User"
-            is_active = True
-            user_role = type('obj', (object,), {'value': 'ADMIN'})
-        return MockEmployee()
+    # DEMO MODE: Create a mock employee object for any user
+    class MockEmployee:
+        def __init__(self, email, employee_id):
+            self.id = hash(email) % 10000
+            self.email = email
+            self.employee_id = employee_id
+            email_name = email.split('@')[0].replace('.', ' ').replace('_', ' ').title()
+            self.first_name = email_name.split()[0] if email_name else "User"
+            self.last_name = email_name.split()[-1] if len(email_name.split()) > 1 else "Account"
+            self.full_name = email_name if email_name else "User Account"
+            self.is_active = True
+            self.user_role = type('obj', (object,), {'value': 'ADMIN'})
+            self.department = type('obj', (object,), {'name': 'General'})
+            self.role = type('obj', (object,), {'title': 'User'})
+            self.growth_score = 75.0
+            self.promotion_readiness = 70.0
     
-    employee = db.query(Employee).filter(Employee.email == email).first()
-    if employee is None:
-        raise credentials_exception
-    
-    if not employee.is_active:
-        raise HTTPException(status_code=400, detail="Inactive employee")
-    
-    return employee
+    return MockEmployee(email, payload.get("employee_id", f"EMP{hash(email) % 10000:04d}"))
 
 
 @router.post("/login", response_model=LoginResponse)
 async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Authenticate employee and return JWT token"""
+    """Authenticate employee and return JWT token - DEMO MODE: Accepts any email/password"""
     
-    # DEMO MODE: Allow demo@demo.com with any password for testing
-    if login_data.email == "demo@demo.com":
-        access_token = create_access_token(
-            data={
-                "sub": "demo@demo.com",
-                "employee_id": "DEMO001",
-                "role": "ADMIN"
-            }
-        )
-        
-        return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "employee": {
-                "id": 1,
-                "employee_id": "DEMO001",
-                "email": "demo@demo.com",
-                "full_name": "Demo User",
-                "role": "ADMIN",
-                "department": "Demo Department",
-                "job_role": "Demo Role"
-            }
-        }
+    # DEMO MODE: Accept any email and password combination
+    # Generate a mock user based on the email provided
     
-    employee = db.query(Employee).filter(Employee.email == login_data.email).first()
+    # Extract name from email (before @)
+    email_name = login_data.email.split('@')[0].replace('.', ' ').replace('_', ' ').title()
     
-    if not employee or not verify_password(login_data.password, employee.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    if not employee.is_active:
-        raise HTTPException(status_code=400, detail="Inactive employee account")
-    
-    # Create access token
+    # Create access token for any user
     access_token = create_access_token(
         data={
-            "sub": employee.email,
-            "employee_id": employee.employee_id,
-            "role": employee.user_role.value
+            "sub": login_data.email,
+            "employee_id": f"EMP{hash(login_data.email) % 10000:04d}",
+            "role": "ADMIN"
         }
     )
     
@@ -103,13 +70,13 @@ async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         "access_token": access_token,
         "token_type": "bearer",
         "employee": {
-            "id": employee.id,
-            "employee_id": employee.employee_id,
-            "email": employee.email,
-            "full_name": employee.full_name,
-            "role": employee.user_role.value,
-            "department": employee.department.name if employee.department else None,
-            "job_role": employee.role.title if employee.role else None
+            "id": hash(login_data.email) % 10000,
+            "employee_id": f"EMP{hash(login_data.email) % 10000:04d}",
+            "email": login_data.email,
+            "full_name": email_name,
+            "role": "ADMIN",
+            "department": "General",
+            "job_role": "User"
         }
     }
 
