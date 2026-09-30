@@ -79,6 +79,48 @@ async def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/seed")
+async def manual_seed():
+    """Manually seed the database - for initial setup"""
+    from .core.database import SessionLocal
+    from .models.employee import Employee
+    
+    db = SessionLocal()
+    try:
+        # Check current employee count
+        employee_count = db.query(Employee).count()
+        
+        if employee_count > 0:
+            return {
+                "status": "skipped",
+                "message": f"Database already has {employee_count} employees. Delete them first if you want to re-seed."
+            }
+        
+        # Run seed script
+        print("📦 Manual seed triggered. Running seed script...")
+        import sys
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+        from scripts.seed_data import main as seed_main
+        seed_main()
+        print("✅ Database seeded successfully!")
+        
+        return {
+            "status": "success",
+            "message": "Database seeded successfully!",
+            "employees_created": 500,
+            "admin_email": "admin@company.com",
+            "admin_password": "admin123"
+        }
+    except Exception as e:
+        print(f"❌ Seed failed: {e}")
+        return {
+            "status": "error",
+            "message": f"Seeding failed: {str(e)}"
+        }
+    finally:
+        db.close()
+
+
 # Import and include routers
 from .api import employees, auth, predictions, analytics, notifications, goals, training, reviews
 
